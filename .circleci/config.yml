@@ -3,7 +3,7 @@ version: 2
 jobs:
   # Build Website
   doc:
-    working_directory: ~/fabric8io/dmp-docs
+    working_directory: ~/wrosenuance/dmp-docs
     docker:
     - image: circleci/node:8-browsers
     steps:
@@ -15,7 +15,7 @@ jobs:
 
   # Run unit tests
   build:
-    working_directory: ~/fabric8io/docker-maven-plugin
+    working_directory: ~/wrosenuance/docker-maven-plugin
     docker:
     - image: circleci/openjdk:8-node-browsers
     steps:
@@ -30,7 +30,7 @@ jobs:
         - ~/.m2
 
   sonar-pr:
-    working_directory: ~/fabric8io/dmp-sonar-pr
+    working_directory: ~/wrosenuance/dmp-sonar-pr
     docker:
     - image: circleci/openjdk:8-node-browsers
     steps:
@@ -41,7 +41,7 @@ jobs:
         if [ -n "${CIRCLE_PR_NUMBER}" ]; then
           mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
              -Dsonar.github.pullRequest=${CIRCLE_PR_NUMBER} \
-             -Dsonar.github.repository=fabric8io/docker-maven-plugin \
+             -Dsonar.github.repository=wrosenuance/docker-maven-plugin \
              -Dsonar.github.oauth=${GITHUB_COMMENT_TOKEN} \
              -Dsonar.host.url=https://sonarcloud.io \
              -Dsonar.login=${SONARQUBE_TOKEN}
@@ -55,7 +55,7 @@ jobs:
         - ~/.m2
 
   sonar:
-    working_directory: ~/fabric8io/dmp-sonar
+    working_directory: ~/wrosenuance/dmp-sonar
     docker:
     - image: circleci/openjdk:8-node-browsers
     steps:
@@ -64,6 +64,8 @@ jobs:
         key: dmp-sonar-{{ checksum "pom.xml" }}
     - run: |
         mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
+        -Dsonar.projectKey=wrosenuance_docker-maven-plugin \
+        -Dsonar.organization=wrosenuance-github \
         -Dsonar.host.url=https://sonarcloud.io \
         -Dsonar.login=${SONARQUBE_TOKEN}
     - save_cache:
@@ -84,4 +86,4 @@ workflows:
     - sonar:
         filters:
           branches:
-            only: master
+            only: local-master
